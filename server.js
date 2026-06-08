@@ -220,6 +220,38 @@ app.put('/alumnos/:id', (req, res) => {
 
 });
 
+app.delete('/alumnos/:id', (req, res) => {
+
+    const idAlumno = req.params.id;
+
+    const { confirmar } = req.body;
+
+    const indiceAlumno = alumnos.findIndex(
+        a => a.id == idAlumno
+    );
+
+    if (indiceAlumno === -1) {
+        return res.status(404).json({
+            error: 'Alumno no encontrado'
+        });
+    }
+
+    if (confirmar !== true) {
+        return res.status(400).json({
+            error: 'Debe confirmar la eliminación'
+        });
+    }
+
+    alumnos.splice(indiceAlumno, 1);
+
+    res.json({
+        mensaje: 'Alumno eliminado correctamente'
+    });
+
+});
+
+
+
 // Levantar servidor
 app.listen(PORT, () => {
     console.log(`Servidor funcionando en http://localhost:${PORT}`);
