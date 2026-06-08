@@ -26,7 +26,15 @@ app.post('/alumnos', (req, res) => {
         error: 'El ID debe ser mayor que cero'
     });
     }
+    const alumnoExistente = alumnos.find(
+    a => a.id == id
+    );
 
+    if (alumnoExistente) {
+        return res.status(400).json({
+            error: 'Ya existe un alumno con ese ID'
+        });
+    }
     // Crear alumno
     const nuevoAlumno = {
         nombre,
@@ -45,18 +53,13 @@ app.post('/alumnos', (req, res) => {
     });
 });
 
-// Levantar servidor
-app.listen(PORT, () => {
-    console.log(`Servidor funcionando en http://localhost:${PORT}`);
-});
-
 app.post('/alumnos/:id/notas', (req, res) => {
-
+    
     const idAlumno = req.params.id;
     const { materia, nota } = req.body;
-
+    
     const alumno = alumnos.find(a => a.id == idAlumno);
-
+    
     if (!alumno) {
         return res.status(404).json({
             error: 'Alumno no encontrado'
@@ -72,9 +75,9 @@ app.post('/alumnos/:id/notas', (req, res) => {
     return res.status(400).json({
         error: 'La nota debe estar entre 0 y 10'
     });
-    }
+}
 
-    alumno.notas.push({
+alumno.notas.push({
         materia,
         nota
     });
@@ -83,7 +86,7 @@ app.post('/alumnos/:id/notas', (req, res) => {
         mensaje: 'Nota agregada correctamente',
         alumno
     });
-
+    
 });
 
 app.put('/alumnos/:id/notas', (req, res) => {
@@ -91,9 +94,9 @@ app.put('/alumnos/:id/notas', (req, res) => {
     const idAlumno = req.params.id;
 
     const { materia, nuevaNota } = req.body;
-
+    
     const alumno = alumnos.find(a => a.id == idAlumno);
-
+    
     if (!alumno) {
         return res.status(404).json({
             error: 'Alumno no encontrado'
@@ -103,13 +106,13 @@ app.put('/alumnos/:id/notas', (req, res) => {
     const notaExistente = alumno.notas.find(
         n => n.materia === materia
     );
-
+    
     if (!notaExistente) {
         return res.status(404).json({
             error: 'Materia no encontrada'
         });
     }
-
+    
     if (nuevaNota == null) {
         return res.status(400).json({
             error: 'Debe ingresar una nueva nota'
@@ -121,12 +124,71 @@ app.put('/alumnos/:id/notas', (req, res) => {
             error: 'La nota debe estar entre 0 y 10'
         });
     }
-
+    
     notaExistente.nota = nuevaNota;
-
+    
     res.json({
         mensaje: 'Nota actualizada correctamente',
         alumno
     });
+    
+});
 
+////////////////////////////////////
+// Buscar alumno por ID
+app.get('/alumnos/id/:id', (req, res) => {
+
+    const alumno = alumnos.find(
+        a => a.id == req.params.id
+    );
+
+    if (!alumno) {
+        return res.status(404).json({
+            error: 'Alumno no encontrado'
+        });
+    }
+
+    res.json(alumno);
+
+});
+
+// Buscar alumno por nombre
+app.get('/alumnos/nombre/:nombre', (req, res) => {
+
+    const resultados = alumnos.filter(
+        a => a.nombre.toLowerCase() === req.params.nombre.toLowerCase()
+    );
+
+    if (resultados.length === 0) {
+        return res.status(404).json({
+            error: 'Alumno no encontrado'
+        });
+    }
+
+    res.json(resultados);
+
+});
+
+// Buscar alumno por apellido
+app.get('/alumnos/apellido/:apellido', (req, res) => {
+
+    const resultados = alumnos.filter(
+        a => a.apellido.toLowerCase() === req.params.apellido.toLowerCase()
+    );
+
+    if (resultados.length === 0) {
+        return res.status(404).json({
+            error: 'Alumno no encontrado'
+        });
+    }
+
+    res.json(resultados);
+
+});
+
+/////////////////////
+
+// Levantar servidor
+app.listen(PORT, () => {
+    console.log(`Servidor funcionando en http://localhost:${PORT}`);
 });
