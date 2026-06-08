@@ -188,6 +188,38 @@ app.get('/alumnos/apellido/:apellido', (req, res) => {
 
 /////////////////////
 
+app.put('/alumnos/:id', (req, res) => {
+
+    const idAlumno = req.params.id;
+
+    const { nombre, apellido } = req.body;
+
+    const alumno = alumnos.find(
+        a => a.id == idAlumno
+    );
+
+    if (!alumno) {
+        return res.status(404).json({
+            error: 'Alumno no encontrado'
+        });
+    }
+
+    if (!nombre || !apellido) {
+        return res.status(400).json({
+            error: 'Debe ingresar nombre y apellido'
+        });
+    }
+
+    alumno.nombre = nombre;
+    alumno.apellido = apellido;
+
+    res.json({
+        mensaje: 'Datos actualizados correctamente',
+        alumno
+    });
+
+});
+
 // Levantar servidor
 app.listen(PORT, () => {
     console.log(`Servidor funcionando en http://localhost:${PORT}`);
