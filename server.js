@@ -21,6 +21,11 @@ app.post('/alumnos', (req, res) => {
             error: 'Faltan campos obligatorios'
         });
     }
+    if (id <= 0) {
+    return res.status(400).json({
+        error: 'El ID debe ser mayor que cero'
+    });
+    }
 
     // Crear alumno
     const nuevoAlumno = {
@@ -63,6 +68,11 @@ app.post('/alumnos/:id/notas', (req, res) => {
             error: 'Faltan datos de la nota'
         });
     }
+    if (nota < 0 || nota > 10) {
+    return res.status(400).json({
+        error: 'La nota debe estar entre 0 y 10'
+    });
+    }
 
     alumno.notas.push({
         materia,
@@ -97,6 +107,18 @@ app.put('/alumnos/:id/notas', (req, res) => {
     if (!notaExistente) {
         return res.status(404).json({
             error: 'Materia no encontrada'
+        });
+    }
+
+    if (nuevaNota == null) {
+        return res.status(400).json({
+            error: 'Debe ingresar una nueva nota'
+        });
+    }
+
+    if (nuevaNota < 0 || nuevaNota > 10) {
+        return res.status(400).json({
+            error: 'La nota debe estar entre 0 y 10'
         });
     }
 
